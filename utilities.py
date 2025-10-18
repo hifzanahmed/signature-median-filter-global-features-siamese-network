@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-from tslearn.metrics import dtw
 
 class Utilities:
     @staticmethod
@@ -124,54 +123,3 @@ class Utilities:
         horizontal_proj, vertical_proj = Utilities.discrete_radon_transform(binary_img)
         return np.concatenate((horizontal_proj, vertical_proj))
     
-    @staticmethod
-    def compute_training_score(signatures):
-        """
-        Computes S1: average DTW distance between all pairs of genuine signatures.
-        Args:
-        signatures (list): List of K signature samples (e.g., time series data).
-        dtw_distance_func (callable): Function to compute DTW distance between two signatures.
-        Returns:
-        float: S1 training score.
-        """
-        K = len(signatures)
-        total_dist = 0.0
-        count = 0
-        utils = Utilities()  
-        print("signature list size:", K)
-        for  i in range(K - 1):
-            for j in range(i + 1, K):
-                dist = utils.dtw(signatures[i], signatures[j])
-                total_dist += dist
-                count += 1
-
-        if count == 0:
-            return 0  # Avoid division by zero
-        return (2 / (K * (K - 1))) * total_dist
-    
-    @staticmethod
-    def compute_verification_score(test_signature, genuine_signatures):
-        """
-        Computes S2: average DTW distance between a test signature and all genuine signatures.
-        Args:
-        test_signature: The test signature sample (e.g., time series data).
-        genuine_signatures (list): List of K genuine signature samples.
-        dtw_distance_func (callable): Function to compute DTW distance between two signatures.
-        Returns:
-        float: S2 verification score.
-        """
-        K = len(genuine_signatures)
-        total_dist = 0.0
-        utils = Utilities()  
-        for i in range(K):
-            dist = utils.dtw(test_signature, genuine_signatures[i])
-            total_dist += dist
-
-        if K == 0:
-            return 0  # Avoid division by zero
-        return total_dist / K
-
-    @staticmethod
-    def dtw(signature1, signature2):
-        # Logic to compute DTW (Dynamic Time Wraping) distance between two signatures
-        return dtw(signature1, signature2)

@@ -5,14 +5,8 @@ import numpy as np
 import torch
 
 class SignatureVerificationTraining:
-    def verifiy_test_signature(test_image_path):
-        test_feature = SignatureFeatureExtraction.preprocess_and_feature_extraction_radon_transform_features(test_image_path)
-        utils = Utilities()
-        dtw_distance = utils.compute_verification_score(test_feature, config.global_features)
-        #print("Computed DTW Distance:", dtw_distance)
-        return dtw_distance
         
-    def verify_with_siamese_network(test_image_path, model):
+    def verify_test_signature_with_siamese_network(test_image_path, model):
         # Step 1: Extract features from test image
         test_feature = SignatureFeatureExtraction.preprocess_and_feature_extraction_radon_transform_features(test_image_path)
 
