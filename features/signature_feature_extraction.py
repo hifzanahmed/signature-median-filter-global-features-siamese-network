@@ -1,5 +1,5 @@
-from utilities import Utilities
-from signature_preprocessing import ImageProcessor
+from utils.utilities import Utilities
+from preprocessing.signature_preprocessing import ImageProcessor
 
 class SignatureFeatureExtraction:
     def preprocess_and_feature_extraction(location):

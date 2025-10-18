@@ -1,5 +1,5 @@
-from signature_training import SignatureTraining
-from signature_verification import SignatureVerificationTraining 
+from training.signature_training import SignatureTraining
+from verification.signature_verification import SignatureVerificationTraining 
 
 def main():
     location_of_training_signature = 'data/saba/'

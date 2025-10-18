@@ -1,4 +1,4 @@
-from utilities import Utilities
+from utils.utilities import Utilities
 import cv2
 
 class ImageProcessor:

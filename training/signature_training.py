@@ -1,6 +1,6 @@
-from utilities import Utilities
-from signature_feature_extraction import SignatureFeatureExtraction
-from siamese_network import SiameseNetwork, SignatureDataset
+from utils.utilities import Utilities
+from features.signature_feature_extraction import SignatureFeatureExtraction
+from model.siamese_network import SiameseNetwork, SignatureDataset
 from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
