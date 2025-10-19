@@ -15,9 +15,9 @@ class Utilities:
         else:
             #print("Signature Image loaded successfully.")
             # Show the image
-            cv2.imshow("Signature Image", signature)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            #cv2.imshow("Signature Image", signature)
+            #cv2.waitKey(0)
+            #cv2.destroyAllWindows()
             return signature
         
     @staticmethod
@@ -67,7 +67,7 @@ class Utilities:
     @staticmethod
     def extract_features_discrete_radon_transform(cropped_img):
         processed_image_features = Utilities.horizontal_vertical_projection_discrete_radon_transform(cropped_img)
-        print("Horizontal and Vertical Projection:", processed_image_features.size)
+        #print("Horizontal and Vertical Projection:", processed_image_features.size)
         return processed_image_features
 
     @staticmethod
