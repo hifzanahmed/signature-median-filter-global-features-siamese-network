@@ -2,6 +2,8 @@ from utils.utilities import Utilities
 from features.signature_feature_extraction import SignatureFeatureExtraction
 from model.siamese_network import SiameseNetwork, SignatureDataset
 from torch.utils.data import DataLoader
+from utils.early_stopping import EarlyStopping
+import numpy as np
 import torch
 import torch.nn as nn
 import config
@@ -50,9 +52,8 @@ class SignatureTraining:
         return model
     
 
-    def training_with_genuine_and_forged_with_siamese(location_genuine, location_forged, genuine_count, forged_count):
+    def training_with_genuine_and_forged_with_drt_siamese(location_genuine, location_forged, genuine_count, forged_count):
         print("Training on Genuine and Forged Signatures...")
-
         genuine_features = []
         for i in range(1, genuine_count + 1):
             feature = SignatureFeatureExtraction.preprocess_and_feature_extraction_radon_transform_features(
@@ -79,7 +80,9 @@ class SignatureTraining:
         optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=1e-5)
         criterion = nn.BCEWithLogitsLoss()
 
-        for epoch in range(250):
+        early_stopping = EarlyStopping(patience=10, min_delta=0.001, verbose=True)
+
+        for epoch in range(200):
             total_loss = 0.0
             model.train()
             for x1, x2, label in dataloader:
@@ -97,8 +100,77 @@ class SignatureTraining:
 
             avg_loss = total_loss / len(dataloader)
             print(f"Epoch {epoch + 1}, Loss: {avg_loss:.4f}")
+
+            # Early Stopping Check
+            #early_stopping(avg_loss, model)
+
+            #if early_stopping.early_stop:
+            #    print("Early stopping triggered. Stopping training.")
+            #    break
+
+        # Load best model weights after training
+        #early_stopping.load_best_weights(model)
         return model
 
+    def training_with_genuine_and_forged_with_global_siamese(location_genuine, location_forged, genuine_count, forged_count):
+        print("Training on Genuine and Forged Signatures...")
+        genuine_features = []
+        for i in range(1, genuine_count + 1):
+            feature = SignatureFeatureExtraction.preprocess_and_feature_extraction(
+                f'{location_genuine}/signature{i}.png')
+            genuine_features.append(feature)
+
+        forged_features = []
+        for i in range(1, forged_count + 1):
+            feature = SignatureFeatureExtraction.preprocess_and_feature_extraction(
+                f'{location_forged}/signature{i}.png')
+            forged_features.append(feature)
+
+        config.global_features = genuine_features  # Save for later testing
+
+        feature_length = genuine_features[0].shape[0]
+        
+        # ==== Prepare Dataset and Dataloader ====
+        dataset = SignatureDataset(genuine_features, forged_features)
+        dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = SiameseNetwork(input_size=feature_length).to(device)
+        #optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=1e-5)
+        criterion = nn.BCEWithLogitsLoss()
+
+        early_stopping = EarlyStopping(patience=10, min_delta=0.001, verbose=True)
+
+        for epoch in range(200):
+            total_loss = 0.0
+            model.train()
+            for x1, x2, label in dataloader:
+                x1, x2, label = x1.to(device), x2.to(device), label.to(device).unsqueeze(1)
+
+                output = model(x1, x2)  # raw logits
+                loss = criterion(output, label)
+
+                optimizer.zero_grad()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # gradient clipping
+                optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_loss = total_loss / len(dataloader)
+            print(f"Epoch {epoch + 1}, Loss: {avg_loss:.4f}")
+
+            # Early Stopping Check
+            #early_stopping(avg_loss, model)
+
+            #if early_stopping.early_stop:
+            #    print("Early stopping triggered. Stopping training.")
+            #    break
+
+        # Load best model weights after training
+        #early_stopping.load_best_weights(model)
+        return model
 
     
     
