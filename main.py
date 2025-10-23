@@ -19,7 +19,6 @@ def main():
     print("\n🔍 Verifying Test Signature...")
     similarity  = SignatureVerificationTraining.verify_test_signature_with_drt_siamese_network(location_of_test_signature, model)
     #similarity  = SignatureVerificationTraining.verify_test_signature_with_global_siamese_network(location_of_test_signature, model)
-    print(f"Similarity Score: {similarity :.4f}")
      
     THRESHOLD = 0.65  # 🔧 Tune based on validation results
     if similarity > THRESHOLD:
