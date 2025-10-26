@@ -82,7 +82,7 @@ class SignatureTraining:
 
         early_stopping = EarlyStopping(patience=10, min_delta=0.001, verbose=True)
 
-        for epoch in range(200):
+        for epoch in range(250):
             total_loss = 0.0
             model.train()
             for x1, x2, label in dataloader:
@@ -142,7 +142,7 @@ class SignatureTraining:
 
         early_stopping = EarlyStopping(patience=10, min_delta=0.001, verbose=True)
 
-        for epoch in range(200):
+        for epoch in range(250):
             total_loss = 0.0
             model.train()
             for x1, x2, label in dataloader:
